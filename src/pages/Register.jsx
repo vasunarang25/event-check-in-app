@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", department: "" });
+  const [form, setForm] = useState({ name: "", email: "", department: "", password: "" });
   const [role, setRole] = useState("organiser");
   const [qrCode, setQrCode] = useState(null);
 
@@ -15,25 +15,14 @@ const Register = () => {
   const handleSubmit = async (e) => {
     console.log(role, form, "ahdshdhbh");
     e.preventDefault();
-    const res = await axios.post("http://localhost:5000/api/register", form);
+    const res = await axios.post("http://localhost:5000/api/register", { role, ...form });
     console.log(res, "resresres", res.data.qrCode);
     setQrCode(res.data.qrCode);
 
-    setForm({ name: "", email: "", department: "" });
-    // navigate("/dashboard");
-
-    // try {
-    //   // send registration data to backend
-    //   await axios.post("http://localhost:5000/api/register", { role, ...form });
-
-    //   // reset form
-    //   setForm({ name: "", email: "", department: "" });
-
-    //   // ✅ navigate to dashboard
+    setForm({ name: "", email: "", department: "", password: "" });
+    // setTimeout(() => {
     //   navigate("/dashboard");
-    // } catch (err) {
-    //   console.error("Error registering user:", err);
-    // }
+    // }, 4000);
   };
 
   return (
@@ -78,6 +67,13 @@ const Register = () => {
             name="department"
             placeholder="Department"
             value={form.department}
+            onChange={handleChange}
+            required
+          />
+          <input
+            name="password"
+            placeholder="Password"
+            value={form.password}
             onChange={handleChange}
             required
           />
