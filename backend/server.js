@@ -29,7 +29,7 @@ const participantSchema = new mongoose.Schema({
   department: String,
   role: String,
   checkedIn: { type: Boolean, default: false },
-  time: String, // check-in time
+  time: String,
 });
 
 const Participant = mongoose.model("Participant", participantSchema);
@@ -38,8 +38,8 @@ app.post("/api/register", async (req, res) => {
   try {
     console.log("📩 Incoming body:", req.body);
 
-    const { name, email, department, role, password } = req.body;
-    if (!name || !email || !department || !role || !password) {
+    const { name, email, department, role } = req.body;
+    if (!name || !email || !department || !role) {
       return res.status(400).json({ success: false, message: "All fields required" });
     }
 
@@ -104,25 +104,31 @@ app.post("/api/checkin", async (req, res) => {
 app.get("/api/dashboard", async (req, res) => {
   try {
     const total = await Participant.countDocuments();
+    console.log(total, "totaltotaltotal");
     const checkedIn = await Participant.countDocuments({ checkedIn: true });
+    console.log(checkedIn, "totaltotaltotal");
     const pending = total - checkedIn;
+    console.log(pending, "pending");
 
-    // Peak times aggregation
     const records = await Participant.find({ checkedIn: true }, "time");
+    console.log(records, 'records')
     const peakTimes = {};
+
     records.forEach((p) => {
       if (p.time) {
-        const hour = new Date(p.checkInTime).getHours();
+        const hour = p.time.getHours(); // extract hour from Date
         peakTimes[hour] = (peakTimes[hour] || 0) + 1;
       }
     });
+    console.log(records, 'records1')
 
     const peakTimesArray = Object.entries(peakTimes).map(([time, count]) => ({
-      time,
+      time: `${time}:00`, // make it human-readable
       count,
     }));
 
-    // AI-like insights
+    console.log(peakTimesArray, 'peakTimesArray')
+
     const insights =
       checkedIn > pending
         ? "Most participants have already checked in."
@@ -137,38 +143,3 @@ app.get("/api/dashboard", async (req, res) => {
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
-
-// Example API endpoint
-// app.post("/api/register", async (req, res) => {
-//   const { name, email, department, role } = req.body;
-//   console.log("Received:", req.body);
-
-//   try {
-//     // Generate QR Code (string as base64 image)
-//     const qrCode = await QRCode.toDataURL(
-//       JSON.stringify({ name, email, department, role })
-//     );
-
-//     res.json({
-//       success: true,
-//       message: "User registered",
-//       data: { name, email, department, role },
-//       qrCode, // 👈 now returning QR code
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).json({ success: false, message: "QR Code generation failed" });
-//   }
-// });
-
-// app.get("/api/dashboard", (req, res) => {
-//     console.log(req, "request");
-//     res.json({
-//         success: true,
-//         message: "Success",
-//     });
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`✅ Server running at http://localhost:${PORT}`);
-// });

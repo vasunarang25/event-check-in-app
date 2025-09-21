@@ -38,6 +38,7 @@ import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-do
 import "./App.css"; // Import normal CSS
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import CheckIn from './pages/CheckIn'
 
 // Pages
 const Home = () => <h2 className="home">Welcome to BUGBUSTERS</h2>;
@@ -69,6 +70,12 @@ export default function App() {
             Dashboard
           </NavLink>
           <NavLink 
+            to="/checkin" 
+            className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+          >
+            CheckIn
+          </NavLink>
+          <NavLink 
             to="/contact" 
             className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
           >
@@ -83,6 +90,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/checkin" element={<CheckIn />} />
           <Route path="/contact" element={<Contact />} />
         </Routes>
       </main>
